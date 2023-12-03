@@ -107,19 +107,6 @@ logger:
   id: logger_std
   baud_rate: 0
 
-##### ENABLE RINGTONE MUSIC SUPPORT #####
-rtttl:
-  id: buzzer
-  output: buzzer_out
-
-##### CONFIGURE INTERNAL BUZZER #####
-output:
-  ##### BUZZER FOR PLAYING RINGTONES #####
-  - platform: ledc
-    id: buzzer_out
-    pin:
-      number: 21
-
 ##### UART FOR NEXTION DISPLAY #####
 uart:
   - id: tf_uart
@@ -193,15 +180,6 @@ api:
           background: int[]
         then:
           - lambda: set_component_color->execute(component, foreground, background);
-
-      ##### Service to play a rtttl tones #####
-      # Example tones : https://codebender.cc/sketch:109888#RTTTL%20Songs.ino
-      - service: play_rtttl
-        variables:
-          song_str: string
-        then:
-          - rtttl.play:
-              rtttl: !lambda 'return song_str;'
 
       #### Service to populate the alarm settings page #####
       - service: alarm_settings
@@ -383,12 +361,6 @@ api:
                     then:
                       - lambda: |-
                           ESP_LOGV("service.global_settings", "Boot page still visible");
-                      - if:
-                          condition:
-                            switch.is_on: notification_sound
-                          then:
-                            - rtttl.play:
-                                rtttl: 'two short:d=4,o=5,b=100:16e6,16e6'
                       - lambda: |-
                           ESP_LOGD("service.global_settings", "Jump to wake-up page: %s", wakeup_page_name->state.c_str());
                           disp1->goto_page(wakeup_page_name->state.c_str());
@@ -413,7 +385,6 @@ api:
               notification_text->publish_state(message.c_str());
               timer_reset_all->execute(current_page->state.c_str());
               notification_unread->turn_on();
-              if (notification_sound->state) buzzer->play("two short:d=4,o=5,b=100:16e6,16e6");
 
       ##### Service to clear the notification #####
       - service: notification_clear
