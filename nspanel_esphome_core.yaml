@@ -1291,12 +1291,11 @@ switch:
       then:
         - script.execute:
             id: refresh_relays
-  ##### PHYSICAL SWITCH 2 ######
+  ##### PHYSICAL SWITCH 2 -> dummy, GPIO reused for power supply ######
   - name: ${device_name} Relay 2
-    platform: gpio
+    platform: template
     id: relay_2
-    pin:
-      number: 19
+    optimistic: true
     restore_mode: RESTORE_DEFAULT_OFF
     on_turn_on:
       then:
