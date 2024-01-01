@@ -1432,6 +1432,8 @@ switch:
     on_turn_on:
       then:
         - script.execute: refresh_relays
+        - delay: 300ms
+        - switch.turn_off: relay_1
     on_turn_off:
       then:
         - script.execute: refresh_relays
