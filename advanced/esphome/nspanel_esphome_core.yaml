@@ -1282,7 +1282,7 @@ switch:
     optimistic: true
     restore_mode: RESTORE_DEFAULT_OFF
 
-  ##### PHYSICAL SWITCH 1 #####
+  ##### PHYSICAL SWITCH 1 (pulse-only for bistable contactor! turns itself off) #####
   - name: ${device_name} Relay 1
     platform: gpio
     id: relay_1
@@ -1293,6 +1293,8 @@ switch:
       then:
         - script.execute:
             id: refresh_relays
+        - delay: 300ms
+        - switch.turn_off: relay_1
     on_turn_off:
       then:
         - script.execute:
