@@ -1686,7 +1686,7 @@ switch:
     optimistic: true
     restore_mode: RESTORE_DEFAULT_OFF
 
-  ##### PHYSICAL SWITCH 1 #####
+  ##### PHYSICAL SWITCH 1 (pulse-only for bistable contactor! turns itself off) #####
   - name: Relay 1
     platform: gpio
     id: relay_1
@@ -1700,6 +1700,8 @@ switch:
               update_bitwise_setting(id(buttons_settings), true, ButtonSettings::ButtonLeft_State);
             refresh_relays->execute(1);
             refresh_hardware_buttons_bars->execute(1);
+        - delay: 300ms
+        - switch.turn_off: relay_1
     on_turn_off:
       then:
         - lambda: |-
