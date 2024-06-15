@@ -132,19 +132,6 @@ logger:
   id: logger_std
   baud_rate: 0
 
-##### ENABLE RINGTONE MUSIC SUPPORT #####
-rtttl:
-  id: buzzer
-  output: buzzer_out
-
-##### CONFIGURE INTERNAL BUZZER #####
-output:
-  ##### BUZZER FOR PLAYING RINGTONES #####
-  - id: buzzer_out
-    platform: ledc
-    pin:
-      number: 21
-
 ##### UART FOR NEXTION DISPLAY #####
 uart:
   - id: tf_uart
@@ -568,7 +555,6 @@ api:
               notification_label->publish_state(label.c_str());
               notification_text->publish_state(message.c_str());
               notification_unread->turn_on();
-              if (notification_sound->state) buzzer->play("two short:d=4,o=5,b=100:16e6,16e6");
             }
 
     # Updates the alarm settings page with current state and configuration, integrating with the panel's interface.
@@ -809,13 +795,6 @@ api:
               if (show) goto_page->execute("qrcode");
               blueprint_status->publish_state(int(blueprint_status->raw_state) | (1 << 2));
             }
-
-    # Plays melodies encoded in RTTTL format, suitable for audio feedback, notifications, or simple tunes.
-    - service: rtttl_play
-      variables:
-        tone: string  # The RTTTL string for the melody to be played. It should follow the RTTTL format, including the melody's name, default settings, and a sequence of notes.
-      then:
-        - lambda: if (!id(is_uploading_tft)) buzzer->play(tone);
 
     - service: set_bool
       variables:
@@ -2546,7 +2525,6 @@ script:
       - lambda: boot_progress->execute(10);
       - delay: 1s
       - lambda: |-
-          if (notification_sound->state) buzzer->play("two short:d=4,o=5,b=100:16e6,16e6");
           set_brightness->execute(display_brightness->state);
           ESP_LOGD("script.page_boot", "Jump to wake-up page: %s", wakeup_page_name->state.c_str());
           goto_page->execute(wakeup_page_name->state.c_str());
